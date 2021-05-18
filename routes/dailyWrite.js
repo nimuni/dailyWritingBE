@@ -41,19 +41,15 @@ router.get('/', (req, res, next)=> {
 
 // 글 생성
 router.post('/', (req, res)=>{
-  const findTitle = function(content){
-    const START_PAD_LENGTH = 3
+  const { content } = req.body
+  const findTitle = function(text){
     const START_PARAGRAPH_STRING = "<p>"
-    const END_PARAGRAPH_STRING = "<p>"
-    console.log(content)
-    console.log(typeof content) // 왜 인덱스를 못찾냐
-    console.log(content.indexOf(START_PARAGRAPH_STRING, 0))
-    /* let startTitlePos = content.indexOf(START_PARAGRAPH_STRING, 0)
-    let endTitlePos = content.indexOf(END_PARAGRAPH_STRING, 0) */
-    let startTitlePos = content.indexOf(START_PARAGRAPH_STRING, 0)
-    let endTitlePos = content.indexOf(END_PARAGRAPH_STRING, 0)
+    const END_PARAGRAPH_STRING = "</p>"
+    const START_PAD_LENGTH = START_PARAGRAPH_STRING.length
+    let startTitlePos = text.indexOf(START_PARAGRAPH_STRING, 0)
+    let endTitlePos = text.indexOf(END_PARAGRAPH_STRING, 0)
     // 태그 지우기
-    let title = content.slice(startTitlePos+START_PAD_LENGTH, endTitlePos)
+    let title = text.slice(startTitlePos+START_PAD_LENGTH, endTitlePos)
     
     title = deleteHTMLTag(title)
     return title;
@@ -64,23 +60,21 @@ router.post('/', (req, res)=>{
       "userId": "kym9788",
       "nickname": "nimuni"
     },
-    "title": _.escape(findTitle(_.unescape(req.body.content))),
-    "content": _.escape(req.body.content),
+    "title": _.escape(findTitle(_.unescape(content))),
+    "content": _.escape(content),
     "comments": []
   };
   
   
 
-  /* DailyWrite.create(tempModel)
+  DailyWrite.create(tempModel)
     .then(() => {
       console.log("성공")
       res.sendStatus(200)
     })
     .catch(err => {
       console.error(err)
-    }) */
-  
-  res.send()
+    })
 })
 
 // 해당 글 조회

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const timeZone = require('mongoose-timezone');
 
 const dailyWriteSchema = new mongoose.Schema({
   user: {
@@ -23,4 +24,5 @@ const dailyWriteSchema = new mongoose.Schema({
   timestamps: true
 })
 
+dailyWriteSchema.plugin(timeZone);
 module.exports = mongoose.model('DailyWrite', dailyWriteSchema);
