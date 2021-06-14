@@ -2,13 +2,11 @@ const mongoose = require('mongoose');
 const timeZone = require('mongoose-timezone');
 
 const dailyWriteSchema = new mongoose.Schema({
-  user: {
-    userId: {
-      type: String
-    },
-    nickname: {
-      type: String
-    }
+  userId: {
+    type: String
+  },
+  nickname: {
+    type: String
   },
   title: {
     type: String,
@@ -18,7 +16,26 @@ const dailyWriteSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  comments: []
+  comments: {
+    type: Array,
+    default: []
+  },
+  like: {
+    type: Number,
+    default: 0
+  },
+  hideYN: {
+    type: String,
+    default: 'N'
+  },
+  createUserId: {
+    type: String,
+    required: true
+  },
+  updateUserId: {
+    type: String,
+    required: true
+  }
 },
 {
   timestamps: true

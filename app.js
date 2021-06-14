@@ -9,6 +9,7 @@ require('dotenv').config()
 // mongoose 연결
 const mongoose = require('mongoose')
 const dburl = process.env.MONGO_URL.replace('<password>', process.env.MONGO_PASSWORD);
+mongoose.set('useFindAndModify', false);
 mongoose.connect(dburl, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: true})
   .then(() => console.log('Successfully connected to mongodb'))
   .catch(e => console.error(e));
@@ -38,16 +39,20 @@ app.use('/', indexRouter);
 
 // 
 // api 라우터 목록
-var usersRouter = require('./routes/users');
-var dailyWriteRouter = require('./routes/dailyWrite');
+const userRouter = require('./routes/user');
+const dailyWriteRouter = require('./routes/dailyWrite');
+const mailAuthRouter = require('./routes/mailAuth')
+const codeRouter = require('./routes/code')
 
-app.use('/api/users', usersRouter);
+app.use('/api/user', userRouter);
+app.use('/api/mailAuth', mailAuthRouter);
 app.use('/api/dailyWrite', dailyWriteRouter);
+app.use('/api/code', codeRouter);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
-});
+// app.use(function(req, res, next) {
+//   next(createError(404));
+// });
 
 // error handler
 app.use(function(err, req, res, next) {
