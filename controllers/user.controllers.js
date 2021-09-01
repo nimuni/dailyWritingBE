@@ -2,6 +2,10 @@ const User = require('../models/user');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const dayjs = require("dayjs");
+const timezone = require('dayjs/plugin/timezone')
+const utc = require('dayjs/plugin/utc');
+dayjs.extend(utc)
+dayjs.extend(timezone)
 require('dotenv').config();
 
 const YOUR_SECRET_KEY = process.env.SECRET_KEY;
@@ -25,19 +29,19 @@ const validUserCheck = function(useYN, stopStartDT, stopEndDT){
 exports.createToken = async function (req, res, next) {
   try {
     const user = await User.findOne(req.body);
-    
-    
 
     if (user) {
       // 정지처리된 사용자인지 검증
       if(user.useYN === "N" ){
         res.status(400).json({ error: 'invalid user' });
       }
+      let expire = dayjs().tz("Asia/Seoul").add(12, "h")
       const token = jwt.sign({
           userId: user.userId,
           nickname: user.nickname,
           userGroupCodeId: user.userGroupCodeId,
-          userGroup: user.userGroup
+          userGroup: user.userGroup,
+          expire: expire
         }, 
         YOUR_SECRET_KEY, 
         {

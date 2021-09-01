@@ -24,6 +24,10 @@ const dailyWriteSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  view: {
+    type: Number,
+    default: 0
+  },
   hideYN: {
     type: String,
     default: 'N'
@@ -35,7 +39,23 @@ const dailyWriteSchema = new mongoose.Schema({
   updateUserId: {
     type: String,
     required: true
-  }
+  },
+  subject_id: {
+    type: String,
+    required: true
+  },
+  subjectCodename: {
+    type: String,
+    required: true
+  },
+  dailySubject_id: {
+    type: String,
+    required: true
+  },
+  dailySubjectCodename: {
+    type: String,
+    required: true
+  },
 },
 {
   timestamps: true

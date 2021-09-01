@@ -16,9 +16,15 @@ mongoose.connect(dburl, { useNewUrlParser: true, useUnifiedTopology: true, useCr
 
 // app 설정
 var app = express();
+
+// cache 제거
+const nocache = require("nocache");
+app.use(nocache());
+
 // cors 설정
 const cors = require('cors');
 app.use(cors());
+
 // 바디파서 설정
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -37,17 +43,16 @@ app.use(express.static(path.join(__dirname, 'public')));
 var indexRouter = require('./routes/index');
 app.use('/', indexRouter);
 
-// 
-// api 라우터 목록
-const userRouter = require('./routes/user');
-const dailyWriteRouter = require('./routes/dailyWrite');
-const mailAuthRouter = require('./routes/mailAuth')
-const codeRouter = require('./routes/code')
+// 스케쥴러
+const scheduler = require('./js/scheduler')
 
-app.use('/api/user', userRouter);
-app.use('/api/mailAuth', mailAuthRouter);
-app.use('/api/dailyWrite', dailyWriteRouter);
-app.use('/api/code', codeRouter);
+// api 라우터 목록
+app.use('/api/user', require('./routes/user'));
+app.use('/api/mailAuth', require('./routes/mailAuth'));
+app.use('/api/dailyWrite', require('./routes/dailyWrite'));
+app.use('/api/code', require('./routes/code'));
+app.use('/api/subject', require('./routes/subject'));
+app.use('/api/dailySubject', require('./routes/dailySubject'));
 
 // catch 404 and forward to error handler
 // app.use(function(req, res, next) {

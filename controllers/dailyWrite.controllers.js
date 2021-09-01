@@ -1,11 +1,49 @@
 const DailyWrite = require('../models/dailyWrite');
 const DailyWriteComment = require('../models/dailyWriteComment');
 require('dotenv').config();
+const { subjectUseCount } = require('./subject.controllers')
+const { dailySubjectUseCount } = require('./dailySubject.controllers')
 
 exports.createDailyWrite = async function (req, res) {
+  const session = await DailyWrite.startSession();
+  session.startTransaction();
   try{
-    let dailyWrite = await new DailyWrite(req.body).save();
+    const option = { session }
+
+    let dailyWrite, subject, dailySubject
+    const dailyWriteParam = {
+      userId: req.body.userId,
+      nickname: req.body.nickname,
+      title: req.body.title,
+      content: req.body.content,
+      createUserId: req.body.createUserId,
+      updateUserId: req.body.updateUserId,
+      subject_id: req.body.subject_id,
+      subjectCodename: req.body.subjectCodename,
+      dailySubject_id: req.body.dailySubject_id,
+      dailySubjectCodename: req.body.dailySubjectCodename,
+    }
+    dailyWrite = await new DailyWrite(dailyWriteParam).save(option);
+
+    const subjectParam = {
+      _id: req.body.subject_id
+    }
+    subject = await subjectUseCount({params: subjectParam}, option)
+
+    if(req.body.dailySubject_id !== "no_id_of_etc"){
+      const dailySubjectParam = {
+        _id: req.body.dailySubject_id
+      }
+      dailySubject = await dailySubjectUseCount({params: dailySubjectParam}, option)
+    }
+
+    await session.commitTransaction();
+    session.endSession();
+
     console.log(dailyWrite)
+    console.log(subject)
+    console.log(dailySubject)
+
     res.status(201).json({
       result: 'ok'
     });
@@ -19,7 +57,7 @@ exports.createDailyWrite = async function (req, res) {
 
 exports.findAllDailyWrite = async function (req, res) {
   try {
-    const dailyWrite = await DailyWrite.find(req.params);
+    const dailyWrite = await DailyWrite.find(req.params, ["nickname", "title", "comments", "like", "view", "hideYN", "subjectCodename", "dailySubjectCodename"]);
     if (dailyWrite.length) {
       res.send(dailyWrite)
     } else {
@@ -34,8 +72,8 @@ exports.findAllDailyWrite = async function (req, res) {
 
 exports.findDailyWrite = async function (req, res) {
   try {
-    const dailyWrite = await DailyWrite.find(req.params);
-    if (dailyWrite.length) {
+    const dailyWrite = await DailyWrite.findOne(req.params);
+    if (dailyWrite) {
       res.send(dailyWrite)
     } else {
       res.status(404).json({ error: 'not found dailyWrite' });
