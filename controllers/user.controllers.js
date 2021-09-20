@@ -51,11 +51,13 @@ exports.createToken = async function (req, res, next) {
       res.cookie('token', token);
       res.cookie('userId', user.userId);
       res.cookie('nickname', user.nickname);
+      res.cookie('expire', expire);
       res.status(201).json({
         result: 'ok',
         token,
         userId: user.userId,
-        nickname: user.nickname
+        nickname: user.nickname,
+        expire: expire
       });
     } else {
       res.status(400).json({ error: 'invalid user' });
